@@ -20,13 +20,15 @@
 
 
 
+
+    var game = new Phaser.Game(448, 496, Phaser.AUTO);
 var score = 0;
 var scoreText;
-lifes = 2;
+var lifes = 2;
 var lifeText;
 var level = 1;
 var levelText;
-    var game = new Phaser.Game(448, 496, Phaser.AUTO);
+	
     var Pacman = function (game) {
         this.map = null;
         this.layer = null;
@@ -57,13 +59,23 @@ var levelText;
             this.load.image('star', 'assets/star.png');
             this.load.image('tiles', 'assets/pacman-tiles.png');
             this.load.spritesheet('pacman', 'assets/pacman.png', 32, 32);
-            this.load.tilemap('map', 'assets/pacman-map.json', null, Phaser.Tilemap.TILED_JSON);
-            // this.load.tilemap('map', 'assets/pacman-map2.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.tilemap('round1', 'assets/pacman-map.json', null, Phaser.Tilemap.TILED_JSON);
+             this.load.tilemap('round2', 'assets/pacman-map2.json', null, Phaser.Tilemap.TILED_JSON);
 			
 			//  Needless to say, graphics (C)opyright Namco
         },
         create: function () {
-            this.map = this.add.tilemap('map');
+			this.build();
+            },
+		
+		  build: function () {
+			if (level===1) {
+			
+            this.map = this.add.tilemap('round1');
+			}
+			else if (level===2) {
+			            this.map = this.add.tilemap('round2');
+				}
             this.map.addTilesetImage('pacman-tiles', 'tiles');
             this.layer = this.map.createLayer('Pacman');
             this.stars = this.add.physicsGroup();
@@ -182,13 +194,19 @@ scoreText.text = 'Score: ' + score;
 
             if (this.stars.total === 0)
             {
+ 
+ 
+this.stars.destroy();
+this.pacman.destroy(); 
+this.layer.destroy();
+
+this.map.destroy();
+
+this.build();
 lifes++;
 lifeText.text = 'LIFES: ' + lifes;
 level++;
-levelText.text = 'Level: ' + level; 
-               
-		this.stars.callAll('revive');
-
+levelText.text = 'Level: ' + level;
             }
         },
         update: function () {
