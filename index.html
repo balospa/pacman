@@ -10,17 +10,24 @@
             background-color: #000;
         }
     </style>
+
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+
 </head>
 <body>
 
     <script type="text/javascript">
 
+
+
 var score = 0;
 var scoreText;
+lifes = 2;
+var lifeText;
+var level = 1;
+var levelText;
     var game = new Phaser.Game(448, 496, Phaser.AUTO);
     var Pacman = function (game) {
-
         this.map = null;
         this.layer = null;
         this.pacman = null;
@@ -28,14 +35,15 @@ var scoreText;
         this.gridsize = 16;
         this.speed = 150;
         this.threshold = 3;
+
         this.marker = new Phaser.Point();
         this.turnPoint = new Phaser.Point();
         this.directions = [ null, null, null, null, null ];
         this.opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
         this.current = Phaser.NONE;
         this.turning = Phaser.NONE;
-
     };
+
     Pacman.prototype = {
         init: function () {
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -45,18 +53,16 @@ var scoreText;
             this.physics.startSystem(Phaser.Physics.ARCADE);
         },
         preload: function () {
-            //  We need this because the assets are on github pages
-            //  Remove the next 2 lines if running locally
-            
+            //  We need this because the assets are on github pages            
             this.load.image('star', 'assets/star.png');
             this.load.image('tiles', 'assets/pacman-tiles.png');
             this.load.spritesheet('pacman', 'assets/pacman.png', 32, 32);
             this.load.tilemap('map', 'assets/pacman-map.json', null, Phaser.Tilemap.TILED_JSON);
-            //  Needless to say, graphics (C)opyright Namco
+            // this.load.tilemap('map', 'assets/pacman-map2.json', null, Phaser.Tilemap.TILED_JSON);
+			
+			//  Needless to say, graphics (C)opyright Namco
         },
         create: function () {
-
-
             this.map = this.add.tilemap('map');
             this.map.addTilesetImage('pacman-tiles', 'tiles');
             this.layer = this.map.createLayer('Pacman');
@@ -76,7 +82,9 @@ var scoreText;
             this.cursors = this.input.keyboard.createCursorKeys();
             this.pacman.play('munch');
             this.move(Phaser.LEFT);
-scoreText = game.add.text(290, -5,'Score: 0', {font: '15px Verdana',  fill: '#FFFF00'});
+scoreText = game.add.text(290, -3,'Score: 0', {font: '15px Verdana',  fill: '#FFFF00'});
+lifeText = game.add.text(10, -3, 'LIFES: 2', {font: '15px Verdana',  fill: '#FFFF00'});
+levelText = game.add.text(190, -3, 'Level: 1', {font: '15px Verdana',  fill: '#FFFF00'});
         },
         checkKeys: function () {
             if (this.cursors.left.isDown && this.current !== Phaser.LEFT)
@@ -169,12 +177,18 @@ scoreText = game.add.text(290, -5,'Score: 0', {font: '15px Verdana',  fill: '#FF
         },
         eatStar: function (pacman, star) {
             star.kill();
-
 score += 10;
 scoreText.text = 'Score: ' + score;
+
             if (this.stars.total === 0)
             {
-                this.stars.callAll('revive');
+lifes++;
+lifeText.text = 'LIFES: ' + lifes;
+level++;
+levelText.text = 'Level: ' + level; 
+               
+		this.stars.callAll('revive');
+
             }
         },
         update: function () {
